@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Zoho AI সহায়ক — সরাসরি ব্যবহার করুন</title>
+<link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#f6f5f0;
+  --surface:#ffffff;
+  --surface2:#f0ede7;
+  --surface3:#e5e1da;
+  --border:rgba(0,0,0,0.09);
+  --border2:rgba(0,0,0,0.16);
+  --text:#181816;
+  --text2:#57564f;
+  --text3:#9a9890;
+  --accent:#1a6b4a;
+  --accent2:#e6f4ee;
+  --accent3:#0d4a31;
+  --warn:#7a3b00;
+  --warn-bg:#fef3e6;
+  --mono:'JetBrains Mono',monospace;
+  --sans:'Hind Siliguri',sans-serif;
+  --r:10px;--rl:14px;
+}
+body{font-family:var(--sans);background:var(--bg);color:var(--text);min-height:100vh;font-size:15px;line-height:1.6}
+
+/* HEADER */
+.hdr{background:var(--surface);border-bottom:1px solid var(--border);padding:13px 24px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:200}
+.logo{width:36px;height:36px;border-radius:9px;background:linear-gradient(135deg,var(--accent),var(--accent3));color:#fff;font-size:18px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.htitle{font-size:16px;font-weight:600;line-height:1.2}
+.hsub{font-size:12px;color:var(--text3);margin-top:1px}
+.badge{font-size:11px;padding:4px 11px;border-radius:20px;background:var(--accent2);color:var(--accent3);font-weight:600;border:1px solid rgba(26,107,74,0.2);white-space:nowrap}
+
+/* LAYOUT */
+.layout{display:flex;min-height:calc(100vh - 63px)}
+.sidebar{width:205px;flex-shrink:0;background:var(--surface);border-right:1px solid var(--border);padding:16px 8px;display:flex;flex-direction:column;gap:2px}
+.slabel{font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:0.08em;padding:10px 10px 5px}
+.tbtn{display:flex;align-items:center;gap:8px;padding:9px 11px;border-radius:var(--r);border:none;cursor:pointer;width:100%;text-align:left;font-family:var(--sans);font-size:13.5px;font-weight:400;background:transparent;color:var(--text2);transition:all 0.14s}
+.tbtn:hover{background:var(--surface2);color:var(--text)}
+.tbtn.active{background:var(--accent2);color:var(--accent3);font-weight:600}
+.ticon{font-size:17px;flex-shrink:0}
+.tbtn .en{font-size:11px;color:var(--text3);display:block;margin-top:0px}
+.tbtn.active .en{color:var(--accent)}
+
+.main{flex:1;padding:24px;overflow-y:auto;max-width:900px}
+.panel{display:none}.panel.active{display:block}
+
+/* TYPOGRAPHY */
+.ptitle{font-size:20px;font-weight:600;margin-bottom:3px}
+.pdesc{font-size:13.5px;color:var(--text2);margin-bottom:18px;line-height:1.7}
+.slbl{font-size:11px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:0.07em;margin-bottom:9px}
+
+/* CARDS */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--rl);padding:17px 20px;margin-bottom:13px}
+.infobox{background:var(--accent2);border:1px solid rgba(26,107,74,0.18);border-radius:var(--r);padding:11px 15px;font-size:13px;color:var(--accent3);margin-bottom:14px;line-height:1.7}
+.warnbox{background:var(--warn-bg);border:1px solid rgba(122,59,0,0.18);border-radius:var(--r);padding:11px 15px;font-size:13px;color:var(--warn);margin-bottom:14px;line-height:1.7}
+
+/* QUICK BUTTONS */
+.qgrid{display:flex;flex-direction:column;gap:5px}
+.qbtn{width:100%;padding:10px 14px;font-family:var(--sans);font-size:13.5px;background:var(--surface2);color:var(--text);border:1px solid var(--border);border-radius:var(--r);cursor:pointer;text-align:left;display:flex;align-items:center;justify-content:space-between;transition:all 0.13s;line-height:1.4}
+.qbtn:hover{background:var(--surface3);border-color:var(--border2)}
+.qbtn .arr{color:var(--text3);font-size:15px;flex-shrink:0;margin-left:8px}
+.qbtn .bn{display:block;font-size:12px;color:var(--text3);margin-top:1px}
+
+/* CHAT / ANSWER */
+.chatbox{border:1px solid var(--border);border-radius:var(--rl);overflow:hidden}
+.chat-hist{min-height:280px;max-height:450px;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:10px;background:var(--surface2)}
+.msg{max-width:84%;font-size:14px;line-height:1.75}
+.msg.user{align-self:flex-end;background:var(--accent);color:#fff;border-radius:13px 13px 3px 13px;padding:9px 13px}
+.msg.bot{align-self:flex-start;background:var(--surface);border:1px solid var(--border);border-radius:13px 13px 13px 3px;padding:9px 13px}
+.msg.bot .blbl{font-size:10px;font-weight:700;color:var(--accent);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:4px}
+.msg.bot pre{background:var(--surface2);border-radius:6px;padding:8px 10px;font-size:11.5px;font-family:var(--mono);overflow-x:auto;margin-top:7px;white-space:pre-wrap;border:1px solid var(--border)}
+.cinput-row{display:flex;gap:7px;padding:10px 12px;border-top:1px solid var(--border);background:var(--surface)}
+.cinput-row input{flex:1;padding:8px 12px;font-size:14px;font-family:var(--sans);border:1px solid var(--border2);border-radius:var(--r);background:var(--surface2);color:var(--text);outline:none}
+.cinput-row input:focus{border-color:var(--accent)}
+.sbtn{padding:8px 16px;font-size:13px;font-weight:600;border-radius:var(--r);border:none;background:var(--accent);color:#fff;cursor:pointer;font-family:var(--sans);white-space:nowrap}
+.sbtn:disabled{opacity:0.5;cursor:not-allowed}
+.cmeta{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+.cctr{font-size:12px;color:var(--text3)}
+.clrbtn{font-size:12px;color:var(--text3);background:none;border:none;cursor:pointer;text-decoration:underline;font-family:var(--sans)}
+.clrbtn:hover{color:var(--text)}
+
+/* API KEY SECTION */
+.api-notice{background:var(--warn-bg);border:1px solid rgba(122,59,0,0.2);border-radius:var(--r);padding:14px 16px;margin-bottom:14px}
+.api-notice-title{font-size:13px;font-weight:600;color:var(--warn);margin-bottom:6px;display:flex;align-items:center;gap:6px}
+.api-notice-text{font-size:12px;color:var(--warn);line-height:1.6;margin-bottom:8px}
+.api-input-row{display:flex;gap:7px;margin-top:10px}
+.api-input-row input{flex:1;padding:8px 12px;font-size:13px;font-family:var(--mono);border:1px solid var(--border2);border-radius:var(--r);background:var(--surface);color:var(--text);outline:none}
+.api-input-row input:focus{border-color:var(--accent)}
+.api-input-row button{padding:8px 14px;font-size:13px;font-weight:600;border-radius:var(--r);border:none;background:var(--accent);color:#fff;cursor:pointer;font-family:var(--sans)}
+.api-status{font-size:12px;margin-top:6px;display:none}
+.api-status.success{color:var(--accent3);display:block}
+.api-status.error{color:var(--warn);display:block}
+.get-key-link{color:var(--accent3);text-decoration:underline;font-weight:600}
+
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.3}}
+.loading-dot{animation:pulse 1.1s infinite}
+
+::-webkit-scrollbar{width:5px;height:5px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:10px}
+
+@media(max-width:660px){
+  .sidebar{width:50px;padding:10px 5px}
+  .tbtn span:not(.ticon){display:none}
+  .tbtn{justify-content:center;padding:10px}
+  .slabel{display:none}
+  .main{padding:14px}
+}
+</style>
+</head>
+<body>
+
+<header class="hdr">
+  <div style="display:flex;align-items:center;gap:11px">
+    <div class="logo">Z</div>
+    <div>
+      <div class="htitle">Zoho AI সহায়ক</div>
+      <div class="hsub">সব উত্তর বাংলায় — Gemini AI Powered</div>
+    </div>
+  </div>
+  <span class="badge" id="ai-status">⚡ AI চালু</span>
+</header>
+
+<div class="layout">
+  <nav class="sidebar">
+    <div class="slabel">Tools</div>
+    <button class="tbtn active" onclick="sw('chat',this)">
+      <span class="ticon">💬</span>
+      <span>AI চ্যাট<span class="en">যেকোনো প্রশ্ন</span></span>
+    </button>
+    <button class="tbtn" onclick="sw('quick',this)">
+      <span class="ticon">⚡</span>
+      <span>দ্রুত প্রশ্ন<span class="en">সাধারণ সমস্যা</span></span>
+    </button>
+  </nav>
+
+  <main class="main">
+    <!-- AI Chat Panel -->
+    <div id="chat" class="panel active">
+      <div class="ptitle">AI সহায়ক</div>
+      <p class="pdesc">Zoho CRM, Deluge, API বা যেকোনো বিষয়ে প্রশ্ন করুন। সম্পূর্ণ বাংলায় উত্তর পাবেন।</p>
+      
+      <!-- API Key Notice -->
+      <div class="api-notice" id="api-notice">
+        <div class="api-notice-title">🔑 ফ্রি API Key প্রয়োজন</div>
+        <div class="api-notice-text">
+          Google Gemini AI ব্যবহার করতে একটি ফ্রি API Key লাগবে। এটি সম্পূর্ণ ফ্রি এবং কয়েক সেকেন্ডে পেয়ে যাবেন।
+        </div>
+        <div class="api-notice-text">
+          <strong>কীভাবে পাবেন:</strong><br>
+          ১. <a href="https://aistudio.google.com/app/apikey" target="_blank" class="get-key-link">এই লিংকে</a> যান<br>
+          ২. "Create API Key" তে ক্লিক করুন<br>
+          ৩. Key কপি করে নিচে পেস্ট করুন
+        </div>
+        <div class="api-input-row">
+          <input type="text" id="api-key-input" placeholder="আপনার Gemini API Key পেস্ট করুন...">
+          <button onclick="saveApiKey()">সেভ করুন</button>
+        </div>
+        <div class="api-status" id="api-status"></div>
+      </div>
+
+      <div class="infobox">
+        ✨ <strong>নতুন ফিচার:</strong> এখন আপনি যেকোনো কাস্টম প্রশ্ন করতে পারবেন। সিলেক্টেড প্রশ্নের পাশাপাশি নিজের মতো করে লিখেও জিজ্ঞাসা করুন!
+      </div>
+
+      <div class="card">
+        <div class="cmeta">
+          <span id="msg-ctr" class="cctr">0 বার্তা</span>
+          <button class="clrbtn" onclick="clearChat()">চ্যাট মুছুন</button>
+        </div>
+        <div class="chatbox">
+          <div id="chat-hist" class="chat-hist">
+            <div class="msg bot">
+              <div class="blbl">Zoho AI বিশেষজ্ঞ</div>
+              নমস্কার! 👋 আমি আপনার Zoho সহায়ক। যেকোনো প্রশ্ন করুন - CRM setup, Deluge script, API integration, বা অন্য কিছু। সব উত্তর বাংলায় দেব।
+            </div>
+          </div>
+          <div class="cinput-row">
+            <input type="text" id="chat-in" placeholder="আপনার প্রশ্ন লিখুন..." onkeypress="if(event.key==='Enter')sendChat()">
+            <button class="sbtn" id="send-btn" onclick="sendChat()">পাঠান</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Quick Questions Panel -->
+    <div id="quick" class="panel">
+      <div class="ptitle">দ্রুত প্রশ্ন</div>
+      <p class="pdesc">সাধারণ Zoho সমস্যার সমাধান এক ক্লিকে পান।</p>
+
+      <div class="card">
+        <div class="slbl">🚀 CRM Setup & Configuration</div>
+        <div class="qgrid">
+          <button class="qbtn" onclick="quickAsk('Zoho CRM এ নতুন module কীভাবে তৈরি করব? ধাপে ধাপে বাংলায় বলো।')">
+            <div>
+              <div>নতুন Module তৈরি</div>
+              <div class="bn">Custom module setup</div>
+            </div>
+            <span class="arr">→</span>
+          </button>
+          <button class="qbtn" onclick="quickAsk('Lead থেকে Contact এ convert করার workflow বানাতে চাই। কোড সহ বাংলায় বুঝিয়ে দাও।')">
+            <div>
+              <div>Lead Conversion Workflow</div>
+              <div class="bn">Automated lead conversion</div>
+            </div>
+            <span class="arr">→</span>
+          </button>
+          <button class="qbtn" onclick="quickAsk('Email notification পাঠানোর automation setup করব কীভাবে? সম্পূর্ণ প্রসেস বাংলায় দাও।')">
+            <div>
+              <div>Email Automation Setup</div>
+              <div class="bn">Auto email triggers</div>
+            </div>
+            <span class="arr">→</span>
+          </button>
+          <button class="qbtn" onclick="quickAsk('Custom field তৈরি করে validation rule কীভাবে যোগ করব?')">
+            <div>
+              <div>Field Validation Rules</div>
+              <div class="bn">Custom field setup</div>
+            </div>
+            <span class="arr">→</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="slbl">⚙️ Deluge Scripting</div>
+        <div class="qgrid">
+          <button class="qbtn" onclick="quickAsk('Deal close হলে automatic invoice তৈরি করার Deluge script লিখে দাও। কোড এ বাংলা comment দিয়ে।')">
+            <div>
+              <div>Auto Invoice Generation</div>
+              <div class="bn">Deal close trigger</div>
+            </div>
+            <span class="arr">→</span>
+          </button>
+          <button class="qbtn" onclick="quickAsk('Custom button এ click করলে API call করার Deluge code চাই। সম্পূর্ণ কোড বাংলা ব্যাখ্যা সহ দাও।')">
+            <div>
+              <div>Button Triggered API Call</div>
+              <div class="bn">Custom action script</div>
+            </div>
+            <span class="arr">→</span>
+          </button>
+          <button class="qbtn" onclick="quickAsk('Field value change detection এর জন্য Deluge script লিখে দাও। Workflow rules সহ।')">
+            <div>
+              <div>Field Change Detection</div>
+              <div class="bn">Trigger on update</div>
+            </div>
+            <span class="arr">→</span>
+          </button>
+          <button class="qbtn" onclick="quickAsk('Lead score calculate করার Deluge function লিখে দাও। বিভিন্ন criteria based scoring।')">
+            <div>
+              <div>Lead Scoring System</div>
+              <div class="bn">Auto score calculation</div>
+            </div>
+            <span class="arr">→</span>
+          </button>
+          <button class="qbtn" onclick="quickAsk('Schedule function দিয়ে daily report generate করার script লিখে দাও।')">
+            <div>
+              <div>Scheduled Daily Reports</div>
+              <div class="bn">Cron-based automation</div>
+            </div>
+            <span class="arr">→</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="slbl">🔌 API Integration</div>
+        <div class="qgrid">
+          <button class="qbtn" onclick="quickAsk('Zoho CRM REST API দিয়ে নতুন contact তৈরি করার code চাই। cURL এবং Python উভয়ে দাও।')">
+            <div>
+              <div>Create Contact via API</div>
+              <div class="bn">POST request example</div>
+            </div>
+            <span class="arr">→</span>
+          </button>
+          <button class="qbtn" onclick="quickAsk('OAuth authentication setup করার পুরো process বাংলায় বুঝিয়ে দাও। Code example সহ।')">
+            <div>
+              <div>OAuth Setup Guide</div>
+              <div class="bn">Authentication process</div>
+            </div>
+            <span class="arr">→</span>
+          </button>
+          <button class="qbtn" onclick="quickAsk('Bulk data import করার জন্য API code লিখে দাও। CSV থেকে multiple records create করব।')">
+            <div>
+              <div>Bulk Data Import</div>
+              <div class="bn">Multiple records API</div>
+            </div>
+            <span class="arr">→</span>
+          </button>
+          <button class="qbtn" onclick="quickAsk('Webhook setup করে external system থেকে data receive করার process বলো।')">
+            <div>
+              <div>Webhook Integration</div>
+              <div class="bn">Receive external data</div>
+            </div>
+            <span class="arr">→</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="slbl">🛠️ Troubleshooting</div>
+        <div class="qgrid">
+          <button class="qbtn" onclick="quickAsk('Workflow কাজ করছে না, কী কী চেক করব? Debug checklist দাও।')">
+            <div>
+              <div>Workflow Not Working</div>
+              <div class="bn">Debug checklist</div>
+            </div>
+            <span class="arr">→</span>
+          </button>
+          <button class="qbtn" onclick="quickAsk('API call এ 401 Unauthorized error আসছে, সমাধান কী? Step by step বলো।')">
+            <div>
+              <div>API 401 Error Fix</div>
+              <div class="bn">Authorization issues</div>
+            </div>
+            <span class="arr">→</span>
+          </button>
+          <button class="qbtn" onclick="quickAsk('Deluge script এ syntax error ঠিক করার tips দাও। Common mistakes list।')">
+            <div>
+              <div>Deluge Syntax Errors</div>
+              <div class="bn">Common mistakes</div>
+            </div>
+            <span class="arr">→</span>
+          </button>
+          <button class="qbtn" onclick="quickAsk('Data import করার সময় error আসছে। কী কী check করব?')">
+            <div>
+              <div>Import Error Solutions</div>
+              <div class="bn">Data import issues</div>
+            </div>
+            <span class="arr">→</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="slbl">📊 Advanced Topics</div>
+        <div class="qgrid">
+          <button class="qbtn" onclick="quickAsk('Blueprint setup করে sales process automate করব কীভাবে?')">
+            <div>
+              <div>Blueprint Automation</div>
+              <div class="bn">Sales process flow</div>
+            </div>
+            <span class="arr">→</span>
+          </button>
+          <button class="qbtn" onclick="quickAsk('Custom module এ relationship কীভাবে তৈরি করব? One-to-many এবং many-to-many।')">
+            <div>
+              <div>Module Relationships</div>
+              <div class="bn">Data linking</div>
+            </div>
+            <span class="arr">→</span>
+          </button>
+          <button class="qbtn" onclick="quickAsk('Analytics dashboard তৈরি করার best practices কী কী?')">
+            <div>
+              <div>Analytics & Reports</div>
+              <div class="bn">Dashboard creation</div>
+            </div>
+            <span class="arr">→</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script type="importmap">
+{
+  "imports": {
+    "@google/generative-ai": "https://esm.run/@google/generative-ai"
+  }
+}
+</script>
+<script type="module">
+import { GoogleGenerativeAI } from "@google/generative-ai";
+
+// Global variables
+let genAI = null;
+let chatHistory = [];
+let msgCount = 0;
+let apiKey = null;
+
+// Initialize
+window.onload = function() {
+  // Check if API key is already saved
+  apiKey = localStorage.getItem('gemini_api_key');
+  if (apiKey) {
+    genAI = new GoogleGenerativeAI(apiKey);
+    document.getElementById('api-notice').style.display = 'none';
+    document.getElementById('ai-status').textContent = '✓ AI চালু';
+    document.getElementById('ai-status').style.background = 'var(--accent2)';
+  }
+  
+  // Load chat history
+  const saved = localStorage.getItem('zoho_chat_history');
+  if (saved) {
+    chatHistory = JSON.parse(saved);
+    renderChatHistory();
+  }
+  
+  updateCtr();
+};
+
+// Save API Key
+window.saveApiKey = function() {
+  const input = document.getElementById('api-key-input');
+  const key = input.value.trim();
+  const status = document.getElementById('api-status');
+  
+  if (!key) {
+    status.className = 'api-status error';
+    status.textContent = '❌ API Key খালি রাখা যাবে না';
+    return;
+  }
+  
+  if (!key.startsWith('AIza')) {
+    status.className = 'api-status error';
+    status.textContent = '❌ সঠিক Gemini API Key নয়। "AIza" দিয়ে শুরু হতে হবে।';
+    return;
+  }
+  
+  try {
+    genAI = new GoogleGenerativeAI(key);
+    localStorage.setItem('gemini_api_key', key);
+    apiKey = key;
+    
+    status.className = 'api-status success';
+    status.textContent = '✓ API Key সফলভাবে সেভ হয়েছে!';
+    document.getElementById('ai-status').textContent = '✓ AI চালু';
+    document.getElementById('ai-status').style.background = 'var(--accent2)';
+    
+    setTimeout(() => {
+      document.getElementById('api-notice').style.display = 'none';
+    }, 1500);
+  } catch (e) {
+    status.className = 'api-status error';
+    status.textContent = '❌ ' + e.message;
+  }
+};
+
+// Switch panels
+window.sw = function(id, btn) {
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tbtn').forEach(b => b.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  btn.classList.add('active');
+};
+
+// Chat functions
+window.sendChat = async function() {
+  if (!apiKey || !genAI) {
+    alert('প্রথমে API Key সেভ করুন! উপরে দেখুন কীভাবে ফ্রি Key পাবেন।');
+    return;
+  }
+  
+  const inp = document.getElementById('chat-in');
+  const btn = document.getElementById('send-btn');
+  const text = inp.value.trim();
+  
+  if (!text) return;
+  
+  inp.value = '';
+  btn.disabled = true;
+  
+  appendMsg('user', text, false);
+  msgCount++;
+  updateCtr();
+  
+  const loading = appendMsg('bot', '<span class="loading-dot">উত্তর তৈরি হচ্ছে...</span>', true);
+  
+  try {
+    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+    
+    const systemPrompt = `তুমি একজন Zoho CRM বিশেষজ্ঞ। সব উত্তর বাংলায় দাও। 
+
+তোমার কাজ:
+- Zoho CRM, Deluge scripting, API integration সম্পর্কিত প্রশ্নের উত্তর দেওয়া
+- Code examples বাংলা ব্যাখ্যা সহ দেওয়া (code এর মধ্যে বাংলা comment)
+- Step-by-step guide দেওয়া
+- Troubleshooting tips দেওয়া
+- Best practices শেয়ার করা
+
+উত্তর দেওয়ার নিয়ম:
+- সম্পূর্ণ বাংলায় লিখবে
+- Technical terms এর পর বন্ধনীতে English রাখতে পারো
+- Code এ comment বাংলায় দিবে
+- Numbered list ব্যবহার করবে যেখানে দরকার
+- সহজ ভাষায় ব্যাখ্যা করবে
+- উদাহরণ দিয়ে বুঝাবে
+- গুরুত্বপূর্ণ বিষয়গুলো highlight করবে`;
+
+    const result = await model.generateContent([
+      systemPrompt,
+      `\n\nপ্রশ্ন: ${text}\n\nউত্তর বাংলায় দাও। যদি code লিখতে হয়, তাহলে code এর মধ্যে বাংলা comment দাও যেন বুঝতে সুবিধা হয়।`
+    ]);
+    
+    const response = await result.response;
+    const answer = response.text();
+    
+    chatHistory.push({ role: 'user', content: text });
+    chatHistory.push({ role: 'assistant', content: answer });
+    
+    // Save to localStorage
+    localStorage.setItem('zoho_chat_history', JSON.stringify(chatHistory));
+    
+    loading.innerHTML = `<div class="blbl">Zoho AI বিশেষজ্ঞ</div>${fmtAnswer(answer)}`;
+  } catch (e) {
+    loading.innerHTML = `<div class="blbl">Zoho AI বিশেষজ্ঞ</div>❌ ${e.message}<br><br>${
+      e.message.includes('API_KEY_INVALID') 
+        ? 'আপনার API Key সঠিক নয়। নতুন Key নিয়ে আবার চেষ্টা করুন।' 
+        : 'অনুগ্রহ করে আবার চেষ্টা করুন।'
+    }`;
+    msgCount--;
+    updateCtr();
+  }
+  
+  btn.disabled = false;
+  document.getElementById('chat-hist').scrollTop = 9999;
+};
+
+window.quickAsk = async function(question) {
+  // Switch to chat panel
+  sw('chat', document.querySelector('.tbtn'));
+  
+  // Set input and send
+  document.getElementById('chat-in').value = question;
+  
+  // Scroll to top
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+  
+  // Wait a bit then send
+  setTimeout(() => sendChat(), 300);
+};
+
+window.clearChat = function() {
+  if (confirm('চ্যাট হিস্ট্রি মুছে ফেলবেন?')) {
+    chatHistory = [];
+    msgCount = 0;
+    localStorage.removeItem('zoho_chat_history');
+    updateCtr();
+    document.getElementById('chat-hist').innerHTML = `
+      <div class="msg bot">
+        <div class="blbl">Zoho AI বিশেষজ্ঞ</div>
+        চ্যাট মুছা হয়েছে! আবার শুরু করুন। যেকোনো Zoho প্রশ্ন করুন। 👋
+      </div>
+    `;
+  }
+};
+
+function appendMsg(role, html, isHtml) {
+  const hist = document.getElementById('chat-hist');
+  const d = document.createElement('div');
+  d.className = 'msg ' + role;
+  
+  if (role === 'bot') {
+    d.innerHTML = `<div class="blbl">Zoho AI বিশেষজ্ঞ</div>${isHtml ? html : fmtAnswer(html)}`;
+  } else {
+    d.textContent = html;
+  }
+  
+  hist.appendChild(d);
+  hist.scrollTop = hist.scrollHeight;
+  return d;
+}
+
+function renderChatHistory() {
+  const hist = document.getElementById('chat-hist');
+  hist.innerHTML = '';
+  
+  chatHistory.forEach(msg => {
+    if (msg.role === 'user') {
+      appendMsg('user', msg.content, false);
+    } else {
+      appendMsg('bot', msg.content, false);
+    }
+  });
+  
+  msgCount = Math.floor(chatHistory.length / 2);
+}
+
+function fmtAnswer(text) {
+  return text
+    .replace(/```(\w*)\n?([\s\S]*?)```/g, '<pre>$2</pre>')
+    .replace(/`([^`]+)`/g, '<code>$1</code>')
+    .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+    .replace(/\n/g, '<br>');
+}
+
+function updateCtr() {
+  const el = document.getElementById('msg-ctr');
+  el.textContent = `${msgCount} বার্তা`;
+}
+</script>
+</body>
+</html>
